@@ -50,6 +50,7 @@ export default function Page({ params }: { params: { id: string } }) {
       options: {
         body: {
           chainType: localStorage.getItem("selectedChain"),
+          chatId,
         },
       },
     };

@@ -79,6 +79,7 @@ export default function Home() {
       options: {
         body: {
           chainType: localStorage.getItem("selectedChain"),
+          chatId,
         },
       },
     };

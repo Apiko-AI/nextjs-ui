@@ -24,6 +24,7 @@ const CHAINS = [
   ChainEnum.FreeSQLModel,
   ChainEnum.SQLWithSuggestion,
   ChainEnum.CombineSQLAndSuggestion,
+  ChainEnum.WithMessageHistory,
 ];
 export default function ChatTopbar({
   isLoading,
