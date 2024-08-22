@@ -4,12 +4,11 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const { messages, chainType } = await req.json();
-  console.debug("--chain-->", chainType);
+  const { messages, chainType, chatId } = await req.json();
 
   const response = await fetch(`${process.env.AI_API_URL}/db/chat`, {
     method: "POST",
-    body: JSON.stringify({ messages, chain_type: chainType }),
+    body: JSON.stringify({ messages, chain_type: chainType, chat_id: chatId }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
