@@ -4,7 +4,7 @@ import React from "react";
 import { ChatRequestOptions } from "ai";
 import { useChat } from "ai/react";
 import { toast } from "sonner";
-import { ChatLayout } from "@/components/chat/chat-layout";
+import { ChatLayout } from "@/components/pages/chat-layout";
 
 export default function Page({ params }: { params: { id: string } }) {
   const {

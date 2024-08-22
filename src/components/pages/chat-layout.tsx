@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { Message } from "ai/react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
-import { Sidebar } from "../sidebar";
-import { Message } from "ai/react";
-import Chat, { ChatProps } from "./chat";
+import { Sidebar } from "@/components/sidebar";
+import Chat, { ChatProps } from "@/components/chat/chat";
 interface ChatLayoutProps {
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
@@ -36,6 +36,7 @@ export function ChatLayout({
   formRef,
   setMessages,
   setInput,
+  SiteBar,
 }: MergedProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
@@ -62,7 +63,7 @@ export function ChatLayout({
       direction="horizontal"
       onLayout={(sizes: number[]) => {
         document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-          sizes
+          sizes,
         )}`;
       }}
       className="h-screen items-stretch"
@@ -76,19 +77,19 @@ export function ChatLayout({
         onCollapse={() => {
           setIsCollapsed(true);
           document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            true
+            true,
           )}`;
         }}
         onExpand={() => {
           setIsCollapsed(false);
           document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            false
+            false,
           )}`;
         }}
         className={cn(
           isCollapsed
             ? "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out"
-            : "hidden md:block"
+            : "hidden md:block",
         )}
       >
         <Sidebar

@@ -4,8 +4,7 @@ import { useChat } from "ai/react";
 import React, { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-
-import { ChatLayout } from "@/components/pages/chat-layout";
+import { ChatLayout } from "@/components/pages/documents/chat-layout";
 import {
   Dialog,
   DialogDescription,
