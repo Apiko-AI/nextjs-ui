@@ -38,9 +38,7 @@ export default function Chat({
   setInput,
 }: ChatProps) {
   return (
-    <div className="flex flex-col justify-between w-full max-w-3xl h-full ">
-      <ChatTopbar isLoading={isLoading} chatId={chatId} messages={messages} />
-
+    <div className="flex flex-col justify-between w-full max-w-3xl h-full">
       <ChatList
         messages={messages}
         input={input}
