@@ -1,8 +1,8 @@
 "use client";
 import { toast } from "sonner";
-import { SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useRef, useCallback } from "react";
 import UserSettings from "@/components/user-settings";
@@ -64,7 +64,7 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
             router.push("/documents");
           }}
           variant="ghost"
-          className="flex justify-between w-full h-14 text-sm xl:text-lg font-normal items-center "
+          className="flex justify-start w-full h-14 text-sm xl:text-lg font-normal items-center"
         >
           <div className="flex gap-3 items-center ">
             {!isCollapsed && !isMobile && (
@@ -76,10 +76,20 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
                 className="dark:invert hidden 2xl:block"
               />
             )}
-            New chat
+            Apiko AI
           </div>
-          <SquarePen size={18} className="shrink-0 w-4 h-4" />
+          <p className="pl-2 mt-1 text-xs text-gray-900 dark:text-white">
+            Documents
+          </p>
         </Button>
+        <div className="flex flex-row justify-center">
+          <Link
+            href="/"
+            className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          >
+            SQL database AI
+          </Link>
+        </div>
 
         <div className="flex flex-col pt-10 gap-2">
           <p className="pl-4 text-lg text-muted-foreground">Knowledge base</p>

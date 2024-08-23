@@ -27,6 +27,7 @@ export default function Home() {
     setMessages,
     setInput,
   } = useChat({
+    api: "api/documents/chat",
     onResponse: (response) => {
       if (response) {
         setLoadingSubmit(false);
@@ -76,7 +77,6 @@ export default function Home() {
     const requestOptions: ChatRequestOptions = {
       options: {
         body: {
-          chainType: localStorage.getItem("selectedChain"),
           chatId,
         },
       },
