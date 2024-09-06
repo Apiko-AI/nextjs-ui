@@ -1,9 +1,9 @@
 import React from "react";
-import { Message } from "ai/react";
 import { ChatRequestOptions } from "ai";
 import ChatTopbar from "./chat-topbar";
 import ChatList from "./chat-list";
 import ChatBottombar from "./chat-bottombar";
+import type { Message } from "@/types/message";
 
 export interface ChatProps {
   chatId?: string;

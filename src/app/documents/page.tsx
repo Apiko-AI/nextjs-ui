@@ -1,8 +1,6 @@
 "use client";
 import { ChatRequestOptions } from "ai";
-import { useChat } from "ai/react";
 import React, { useEffect, useRef } from "react";
-import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { ChatLayout } from "@/components/pages/documents/chat-layout";
 import {
@@ -14,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 import UsernameForm from "@/components/username-form";
+import { useChat } from "@/app/hooks/useChat";
 
 export default function Home() {
   const {
@@ -28,38 +27,16 @@ export default function Home() {
     setInput,
   } = useChat({
     api: "api/documents/chat",
-    onResponse: (response) => {
-      if (response) {
-        setLoadingSubmit(false);
-      }
-    },
-    onError: (error) => {
-      setLoadingSubmit(false);
-      toast.error("An error occurred. Please try again.");
-    },
   });
   const [chatId, setChatId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
-  const [loadingSubmit, setLoadingSubmit] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (messages.length < 1) {
-      // Generate a random id for the chat
-      console.log("Generating chat id");
-      const id = uuidv4();
-      setChatId(id);
+      setChatId(uuidv4());
     }
   }, [messages]);
-
-  React.useEffect(() => {
-    if (!isLoading && !error && chatId && messages.length > 0) {
-      // Save messages to local storage
-      localStorage.setItem(`chat_${chatId}`, JSON.stringify(messages));
-      // Trigger the storage event to update the sidebar component
-      window.dispatchEvent(new Event("storage"));
-    }
-  }, [chatId, isLoading, error]);
 
   useEffect(() => {
     if (!localStorage.getItem("ollama_user")) {
@@ -69,7 +46,6 @@ export default function Home() {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoadingSubmit(true);
 
     setMessages([...messages]);
 
@@ -105,7 +81,7 @@ export default function Home() {
           handleInputChange={handleInputChange}
           handleSubmit={onSubmit}
           isLoading={isLoading}
-          loadingSubmit={loadingSubmit}
+          loadingSubmit={isLoading}
           error={error}
           stop={stop}
           navCollapsedSize={10}
