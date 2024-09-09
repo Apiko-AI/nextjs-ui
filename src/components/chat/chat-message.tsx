@@ -93,7 +93,12 @@ export default function ChatMessage({
               })}
               {data ? (
                 <span className="w-full flex justify-end text-sky-400/100">
-                  <Link target="_blank" href={data.originUrl}>Read more on page </Link>
+                  <Link
+                    target="_blank"
+                    href={`/documents/preview?originUrl=${`${location.origin}/api/documents/preview/${data?.file_name}`}&page=${data.page}&fileName=${data?.file_name}`}
+                  >
+                    Read more on page{" "}
+                  </Link>
                   <span className="inline-flex items-center rounded-lg bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
                     {data.page}
                   </span>

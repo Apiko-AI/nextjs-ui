@@ -1,6 +1,7 @@
 export type DocumentMessageData = {
   originUrl: string;
   page: number;
+  file_name: string;
 };
 
 export type Message = {
