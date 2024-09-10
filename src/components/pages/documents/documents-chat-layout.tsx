@@ -1,61 +1,69 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/pages/documents/sidebar";
-import Chat, { ChatProps } from "@/components/chat/chat";
-import { Message } from "ai/react";
-interface ChatLayoutProps {
-  defaultLayout: number[] | undefined;
-  defaultCollapsed?: boolean;
-  navCollapsedSize: number;
-  chatId: string;
-  setMessages: (messages: Message[]) => void;
+import Chat from "@/components/chat/chat";
+import PdfViewLayout from "@/components/pages/documents/pdf-view-layout";
+import { useChat } from "@/app/hooks/useChat";
+import { ChatRequestOptions } from "ai";
+
+interface DocumentsChatLayoutProps {
+  defaultLayout: number[];
+  isMobile: boolean;
 }
 
-type MergedProps = ChatLayoutProps & ChatProps;
+export function DocumentsChatLayout({
+  defaultLayout,
+  isMobile,
+}: DocumentsChatLayoutProps) {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [chatId, setChatId] = React.useState<string>("");
+  const formRef = useRef<HTMLFormElement>(null);
 
-export function ChatLayout({
-  defaultLayout = [30, 160],
-  defaultCollapsed = false,
-  navCollapsedSize,
-  messages,
-  input,
-  handleInputChange,
-  handleSubmit,
-  isLoading,
-  error,
-  stop,
-  chatId,
-  loadingSubmit,
-  formRef,
-  setMessages,
-  setInput,
-}: MergedProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
-  const [isMobile, setIsMobile] = useState(false);
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error,
+    stop,
+    setMessages,
+    setInput,
+  } = useChat({
+    api: "api/documents/chat",
+  });
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setMessages([...messages]);
+
+    // Prepare the options object with additional body data, to pass the model.
+    const requestOptions: ChatRequestOptions = {
+      options: {
+        body: {
+          chatId,
+        },
+      },
+    };
+
+    // Call the handleSubmit function with the options
+    handleSubmit(e, requestOptions);
+  };
 
   useEffect(() => {
-    const checkScreenWidth = () => {
-      setIsMobile(window.innerWidth <= 1023);
-    };
-
-    // Initial check
-    checkScreenWidth();
-
-    // Event listener for screen width changes
-    window.addEventListener("resize", checkScreenWidth);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", checkScreenWidth);
-    };
-  }, []);
+    if (messages.length < 1) {
+      setChatId(uuidv4());
+    }
+  }, [messages]);
 
   return (
     <ResizablePanelGroup
@@ -69,7 +77,7 @@ export function ChatLayout({
     >
       <ResizablePanel
         defaultSize={defaultLayout[0]}
-        collapsedSize={navCollapsedSize}
+        collapsedSize={10}
         collapsible={true}
         minSize={isMobile ? 0 : 12}
         maxSize={isMobile ? 0 : 16}
@@ -104,14 +112,20 @@ export function ChatLayout({
         className="h-full w-full flex justify-center"
         defaultSize={defaultLayout[1]}
       >
+        <PdfViewLayout />
+      </ResizablePanel>
+      <ResizablePanel
+        className="h-full w-full flex justify-center"
+        defaultSize={defaultLayout[2]}
+      >
         <Chat
           chatId={chatId}
           messages={messages}
           input={input}
           handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
+          handleSubmit={onSubmit}
           isLoading={isLoading}
-          loadingSubmit={loadingSubmit}
+          loadingSubmit={isLoading}
           error={error}
           stop={stop}
           formRef={formRef}

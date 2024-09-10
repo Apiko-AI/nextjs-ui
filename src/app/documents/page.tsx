@@ -1,8 +1,10 @@
 "use client";
-import { ChatRequestOptions } from "ai";
-import React, { useEffect, useRef } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { ChatLayout } from "@/components/pages/documents/chat-layout";
+import { pdfjs } from "react-pdf";
+import React, { useEffect, useRef, useState } from "react";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+import { DocumentsChatLayout } from "@/components/pages/documents/documents-chat-layout";
 import {
   Dialog,
   DialogDescription,
@@ -12,55 +14,21 @@ import {
 } from "@/components/ui/dialog";
 
 import UsernameForm from "@/components/username-form";
-import { useChat } from "@/app/hooks/useChat";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
 export default function Home() {
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    error,
-    stop,
-    setMessages,
-    setInput,
-  } = useChat({
-    api: "api/documents/chat",
-  });
-  const [chatId, setChatId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (messages.length < 1) {
-      setChatId(uuidv4());
-    }
-  }, [messages]);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem("ollama_user")) {
       setOpen(true);
     }
   }, []);
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setMessages([...messages]);
-
-    // Prepare the options object with additional body data, to pass the model.
-    const requestOptions: ChatRequestOptions = {
-      options: {
-        body: {
-          chatId,
-        },
-      },
-    };
-
-    // Call the handleSubmit function with the options
-    handleSubmit(e, requestOptions);
-  };
 
   const onOpenChange = (isOpen: boolean) => {
     const username = localStorage.getItem("ollama_user");
@@ -71,25 +39,27 @@ export default function Home() {
     setOpen(isOpen);
   };
 
+  useEffect(() => {
+    const checkScreenWidth = () => {
+      setIsMobile(window.innerWidth <= 1023);
+    };
+
+    // Initial check
+    checkScreenWidth();
+
+    // Event listener for screen width changes
+    window.addEventListener("resize", checkScreenWidth);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", checkScreenWidth);
+    };
+  }, []);
+
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <ChatLayout
-          chatId=""
-          messages={messages}
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={onSubmit}
-          isLoading={isLoading}
-          loadingSubmit={isLoading}
-          error={error}
-          stop={stop}
-          navCollapsedSize={10}
-          defaultLayout={[30, 160]}
-          formRef={formRef}
-          setMessages={setMessages}
-          setInput={setInput}
-        />
+        <DocumentsChatLayout isMobile={isMobile} defaultLayout={[30, 100, 60]} />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">
             <DialogTitle>Welcome to Apiko AI!</DialogTitle>
