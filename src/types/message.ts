@@ -2,6 +2,7 @@ export type DocumentMessageData = {
   originUrl: string;
   page: number;
   file_name: string;
+  highlight?: string;
 };
 
 export type Message = {

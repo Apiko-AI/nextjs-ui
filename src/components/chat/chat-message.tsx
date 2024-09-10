@@ -95,7 +95,7 @@ export default function ChatMessage({
                 <span className="w-full flex justify-end text-sky-400/100">
                   <Link
                     target="_blank"
-                    href={`/documents/preview?originUrl=${`${location.origin}/api/documents/preview/${data?.file_name}`}&page=${data.page}&fileName=${data?.file_name}`}
+                    href={`/documents/preview?originUrl=${`${location.origin}/api/documents/preview/${data?.file_name}`}&page=${data.page}&fileName=${data?.file_name}&highlight=${data.highlight}`}
                   >
                     Read more on page{" "}
                   </Link>

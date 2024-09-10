@@ -1,16 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useState } from "react";
 import { Document, Page } from "react-pdf";
 import { Pagination } from "react-headless-pagination";
 
+function highlightPattern(text: string, pattern: string) {
+  if (text && pattern.includes(text)) {
+    return `<mark>${text}</mark>`;
+  }
+  return text;
+}
 export default function PdfViewer({
   originUrl,
   page,
+  highlight,
 }: {
   originUrl: string;
   page?: number;
+  highlight?: string;
 }) {
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>((page || 1) - 1);
@@ -18,15 +26,21 @@ export default function PdfViewer({
     setNumPages(numPages);
   }
 
-  console.debug("--currentPage->", currentPage);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  const textRenderer = useCallback(
+    ({ str }: { str: string }) => {
+      return highlightPattern(str, highlight || "");
+    },
+    [highlight],
+  );
+
   return (
     <div>
       <Document file={originUrl} onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={currentPage + 1} />
+        <Page pageNumber={currentPage + 1} customTextRenderer={textRenderer} />
       </Document>
       <Pagination
         totalPages={numPages}

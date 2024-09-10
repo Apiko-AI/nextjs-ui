@@ -20,6 +20,8 @@ export default function Preview() {
   const originUrl = searchParams.get("originUrl");
   const page = parseInt(searchParams.get("page") || "1");
   const fileName = searchParams.get("fileName");
+  const highlight = searchParams.get("highlight") || "";
+
   if (!originUrl) {
     return null;
   }
@@ -36,7 +38,7 @@ export default function Preview() {
           </Button>
         </div>
       </div>
-      <PdfViewer originUrl={originUrl} page={page || 1} />
+      <PdfViewer originUrl={originUrl} page={page || 1} highlight={highlight} />
     </main>
   );
 }
