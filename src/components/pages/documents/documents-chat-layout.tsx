@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -12,7 +12,10 @@ import { Sidebar } from "@/components/pages/documents/sidebar";
 import Chat from "@/components/chat/chat";
 import PdfViewLayout from "@/components/pages/documents/pdf-view-layout";
 import { useChat } from "@/app/hooks/useChat";
-import { ChatRequestOptions } from "ai";
+import { DocumentsContext } from "@/context/documents-context/document-context";
+import { ChatMessageDocumentData } from "@/components/pages/documents/chat-message-document-data";
+
+import type { ChatRequestOptions } from "ai";
 
 interface DocumentsChatLayoutProps {
   defaultLayout: number[];
@@ -23,6 +26,7 @@ export function DocumentsChatLayout({
   defaultLayout,
   isMobile,
 }: DocumentsChatLayoutProps) {
+  const { selected } = useContext(DocumentsContext);
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [chatId, setChatId] = React.useState<string>("");
   const formRef = useRef<HTMLFormElement>(null);
@@ -93,11 +97,6 @@ export function DocumentsChatLayout({
             false,
           )}`;
         }}
-        className={cn(
-          isCollapsed
-            ? "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out"
-            : "hidden md:block",
-        )}
       >
         <Sidebar
           isCollapsed={isCollapsed || isMobile}
@@ -109,29 +108,46 @@ export function DocumentsChatLayout({
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
-        className="h-full w-full flex justify-center"
         defaultSize={defaultLayout[1]}
+        collapsible={false}
+        minSize={isMobile ? 0 : 50}
+        maxSize={isMobile ? 0 : 100}
+        className={cn(
+          "h-full flex justify-center",
+          selected
+            ? "w-full transition-all duration-300 ease-in-out"
+            : "hidden",
+        )}
       >
         <PdfViewLayout />
       </ResizablePanel>
+      {selected && <ResizableHandle withHandle={Boolean(selected)} />}
       <ResizablePanel
-        className="h-full w-full flex justify-center"
+        className="h-full w-full flex flex-col"
         defaultSize={defaultLayout[2]}
+        collapsible={false}
+        minSize={20}
       >
-        <Chat
-          chatId={chatId}
-          messages={messages}
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={onSubmit}
-          isLoading={isLoading}
-          loadingSubmit={isLoading}
-          error={error}
-          stop={stop}
-          formRef={formRef}
-          isMobile={isMobile}
-          setInput={setInput}
-        />
+        <div className="flex flex-coll w-full min-h-10 border-b items-center">
+          <p className="text-md ml-2">Chat</p>
+        </div>
+        <div className="flex w-full h-full px-2 mt-2 justify-center">
+          <Chat
+            chatId={chatId}
+            messages={messages}
+            messageDataRender={ChatMessageDocumentData}
+            input={input}
+            handleInputChange={handleInputChange}
+            handleSubmit={onSubmit}
+            isLoading={isLoading}
+            loadingSubmit={isLoading}
+            error={error}
+            stop={stop}
+            formRef={formRef}
+            isMobile={isMobile}
+            setInput={setInput}
+          />
+        </div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );

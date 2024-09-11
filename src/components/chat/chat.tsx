@@ -21,6 +21,7 @@ export interface ChatProps {
   formRef: React.RefObject<HTMLFormElement>;
   isMobile?: boolean;
   setInput?: React.Dispatch<React.SetStateAction<string>>;
+  messageDataRender?: (message: Message) => React.JSX.Element | null;
 }
 
 export default function Chat({
@@ -36,6 +37,7 @@ export default function Chat({
   formRef,
   isMobile,
   setInput,
+  messageDataRender,
 }: ChatProps) {
   return (
     <div className="flex flex-col justify-between w-full max-w-3xl h-full">
@@ -50,6 +52,7 @@ export default function Chat({
         stop={stop}
         formRef={formRef}
         isMobile={isMobile}
+        messageDataRender={messageDataRender}
       />
 
       <ChatBottombar

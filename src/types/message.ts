@@ -1,9 +1,4 @@
-export type DocumentMessageData = {
-  originUrl: string;
-  page: number;
-  file_name: string;
-  highlight?: string;
-};
+import type { DocumentType } from "@/types/document";
 
 export type Message = {
   id: string;
@@ -17,5 +12,5 @@ export type Message = {
    * Otherwise, the name field should not be set.
    */
   name?: string;
-  data?: never;
+  data?: DocumentType | never;
 };

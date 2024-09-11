@@ -15,6 +15,7 @@ export default function ChatList({
   loadingSubmit,
   formRef,
   isMobile,
+  messageDataRender,
 }: ChatProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [name, setName] = React.useState<string>("");
@@ -139,6 +140,7 @@ export default function ChatList({
             index={index}
             userName={name}
             isLoading={isLoading}
+            messageDataRender={messageDataRender}
           />
         ))}
         {loadingSubmit && (

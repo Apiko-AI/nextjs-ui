@@ -5,6 +5,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 import { DocumentsChatLayout } from "@/components/pages/documents/documents-chat-layout";
+import { DocumentsProvider } from "@/context/documents-context/document-context";
 import {
   Dialog,
   DialogDescription,
@@ -59,7 +60,12 @@ export default function Home() {
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DocumentsChatLayout isMobile={isMobile} defaultLayout={[30, 100, 60]} />
+        <DocumentsProvider>
+          <DocumentsChatLayout
+            isMobile={isMobile}
+            defaultLayout={[30, 0, 60]}
+          />
+        </DocumentsProvider>
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">
             <DialogTitle>Welcome to Apiko AI!</DialogTitle>

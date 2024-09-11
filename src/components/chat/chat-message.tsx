@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 import CodeDisplayBlock from "../code-display-block";
 
-import type { Message, DocumentMessageData } from "@/types/message";
+import type { Message } from "@/types/message";
 
 export default function ChatMessage({
   message,
@@ -16,14 +16,16 @@ export default function ChatMessage({
   index,
   countOfMessages,
   isLoading,
+  messageDataRender,
 }: {
   message: Message;
   userName: string;
   index: number;
   countOfMessages: number;
   isLoading: boolean;
+  messageDataRender?: (message: Message) => React.JSX.Element | null;
 }) {
-  const data = message.data as DocumentMessageData | undefined;
+  const data = message.data;
   return (
     <motion.div
       layout
@@ -79,7 +81,11 @@ export default function ChatMessage({
               {message.content.split("```").map((part, index) => {
                 if (index % 2 === 0) {
                   return (
-                    <Markdown key={index} remarkPlugins={[remarkGfm]}>
+                    <Markdown
+                      key={index}
+                      remarkPlugins={[remarkGfm]}
+                      components={{ p: "span" }}
+                    >
                       {part}
                     </Markdown>
                   );
@@ -91,20 +97,7 @@ export default function ChatMessage({
                   );
                 }
               })}
-              {data ? (
-                <span className="w-full flex justify-end text-sky-400/100">
-                  <Link
-                    target="_blank"
-                    href={`/documents/preview?originUrl=${`${location.origin}/api/documents/preview/${data?.file_name}`}&page=${data.page}&fileName=${data?.file_name}&highlight=${data.highlight}`}
-                  >
-                    Read more on page{" "}
-                  </Link>
-                  <span className="inline-flex items-center rounded-lg bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                    {data.page}
-                  </span>
-                </span>
-              ) : null}
-
+              {data && messageDataRender ? messageDataRender(message) : null}
               {isLoading && index === countOfMessages - 1 && (
                 <span className="animate-pulse" aria-label="Typing">
                   ...
