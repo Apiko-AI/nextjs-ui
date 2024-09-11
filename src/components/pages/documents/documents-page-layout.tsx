@@ -9,11 +9,12 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/pages/documents/sidebar";
-import Chat from "@/components/chat/chat";
 import PdfViewLayout from "@/components/pages/documents/pdf-view-layout";
 import { useChat } from "@/app/hooks/useChat";
 import { DocumentsContext } from "@/context/documents-context/document-context";
-import { ChatMessageDocumentData } from "@/components/pages/documents/chat-message-document-data";
+import ChatList from "@/components/pages/documents/chat/chat-list";
+import ChatBottombar from "@/components/chat/chat-bottombar";
+import { ChatMessageDocumentData } from "@/components/pages/documents/chat/chat-message-document-data";
 
 import type { ChatRequestOptions } from "ai";
 
@@ -22,7 +23,7 @@ interface DocumentsChatLayoutProps {
   isMobile: boolean;
 }
 
-export function DocumentsChatLayout({
+export function DocumentsPageLayout({
   defaultLayout,
   isMobile,
 }: DocumentsChatLayoutProps) {
@@ -132,21 +133,26 @@ export function DocumentsChatLayout({
           <p className="text-md ml-2">Chat</p>
         </div>
         <div className="flex w-full h-full px-2 mt-2 justify-center">
-          <Chat
-            chatId={chatId}
-            messages={messages}
-            messageDataRender={ChatMessageDocumentData}
-            input={input}
-            handleInputChange={handleInputChange}
-            handleSubmit={onSubmit}
-            isLoading={isLoading}
-            loadingSubmit={isLoading}
-            error={error}
-            stop={stop}
-            formRef={formRef}
-            isMobile={isMobile}
-            setInput={setInput}
-          />
+          <div className="flex flex-col justify-between w-full max-w-3xl h-full">
+            <ChatList
+              messages={messages}
+              isLoading={isLoading}
+              loadingSubmit={isLoading}
+              messageDataRender={ChatMessageDocumentData}
+            />
+
+            <ChatBottombar
+              messages={messages}
+              input={input}
+              handleInputChange={handleInputChange}
+              handleSubmit={onSubmit}
+              isLoading={isLoading}
+              error={error}
+              stop={stop}
+              formRef={formRef}
+              setInput={setInput}
+            />
+          </div>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

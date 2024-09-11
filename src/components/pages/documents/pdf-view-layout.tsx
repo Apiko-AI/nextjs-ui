@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useContext } from "react";
+import { Tooltip } from "react-tooltip";
 
 import PdfViewer from "@/components/pdf/pdf-viewer";
 import CloseIcon from "@/components/ui/icons/CloseIcon";
+import DownloadIcon from "@/components/ui/icons/DownloadIcon";
 import { DocumentsContext } from "@/context/documents-context/document-context";
+import Link from "next/link";
 
 type Tab = {
   text: string;
@@ -52,6 +55,17 @@ export default function PdfViewLayout() {
             onClick: () => setSelectedDocument(d),
           }))}
         />
+        <div className="flex items-center mr-4">
+          <Link
+            data-tooltip-id={`PdfViewLayout-download`}
+            data-tooltip-content="Download"
+            target="_blank"
+            href={`${location.origin}/api/documents/preview/${selected.file_name}`}
+          >
+            <DownloadIcon />
+          </Link>
+          <Tooltip id={`PdfViewLayout-download`} />
+        </div>
       </div>
       <div className="flex w-full px-2 mt-2">
         <PdfViewer

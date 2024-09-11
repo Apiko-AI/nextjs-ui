@@ -12,13 +12,14 @@ interface IDocumentsContextValue {
 }
 interface IDocumentsProviderProps extends PropsWithChildren {}
 
+// todo: remove mocDocument
 const mocDocument = {
   file_name: "d5dcd54c-b1ce-4bea-b715-5a03f0c05d64_Generative AI.pdf",
   highlight:
     " 1.1.1.1. Narrow AI (Weak AI) is a type of artificial intelligence (AI) that is designed and trained for a specific task or range of tasks.",
   originUrl:
     "http://localhost:8000/documents/download/d5dcd54c-b1ce-4bea-b715-5a03f0c05d64_Generative AI.pdf",
-  page: "4",
+  page: 4,
 };
 const defaultContextValue = {
   items: [],
@@ -32,7 +33,9 @@ const DocumentsContext =
   createContext<IDocumentsContextValue>(defaultContextValue);
 
 const DocumentsProvider: FC<IDocumentsProviderProps> = ({ children }) => {
-  const [items, setItems] = useState<Array<DocumentType>>([]);
+  const [items, setItems] = useState<Array<DocumentType>>(
+    defaultContextValue.items,
+  );
   const [selected, setSelected] = useState<DocumentType | null>(
     defaultContextValue.selected,
   );

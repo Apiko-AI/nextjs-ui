@@ -1,10 +1,8 @@
 "use client";
 import { pdfjs } from "react-pdf";
-import React, { useEffect, useRef, useState } from "react";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
+import React, { useEffect, useState } from "react";
 
-import { DocumentsChatLayout } from "@/components/pages/documents/documents-chat-layout";
+import { DocumentsPageLayout } from "@/components/pages/documents/documents-page-layout";
 import { DocumentsProvider } from "@/context/documents-context/document-context";
 import {
   Dialog,
@@ -15,6 +13,10 @@ import {
 } from "@/components/ui/dialog";
 
 import UsernameForm from "@/components/username-form";
+
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-tooltip/dist/react-tooltip.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -61,7 +63,7 @@ export default function Home() {
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DocumentsProvider>
-          <DocumentsChatLayout
+          <DocumentsPageLayout
             isMobile={isMobile}
             defaultLayout={[30, 0, 60]}
           />

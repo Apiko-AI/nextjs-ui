@@ -10,7 +10,7 @@ export const useChat = ({ api }: { api: string }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const handleInputChange = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
-      const value = e.currentTarget?.value || e.target.value;
+      const value = e.currentTarget?.value || "";
       setInput(value);
     },
     [setInput],

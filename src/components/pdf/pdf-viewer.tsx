@@ -2,6 +2,7 @@
 
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useState } from "react";
+import { Tooltip } from "react-tooltip";
 import { Document, Page } from "react-pdf";
 import MinusIcon from "@/components/ui/icons/MinusIcon";
 import ResetIcon from "@/components/ui/icons/ResetIcon";
@@ -9,6 +10,7 @@ import PlusIcon from "@/components/ui/icons/PlusIcon";
 import ArrowLeftIcon from "@/components/ui/icons/ArrowLeftIcon";
 import ArrowRightIcon from "@/components/ui/icons/ArrowRightIcon";
 function highlightPattern(text: string, pattern: string) {
+  console.debug('--pattern->', pattern)
   if (text && pattern.includes(text)) {
     return `<mark>${text}</mark>`;
   }
@@ -109,24 +111,44 @@ export default function PdfViewer({
         </div>
         <div className="flex">
           <div className="flex items-center justify-between w-20 mr-4">
-            <button onClick={decreaseScale}>
+            <button
+              onClick={decreaseScale}
+              data-tooltip-id="pdf-viewer-toolbar-zoom-out"
+              data-tooltip-content="Zoom Out"
+            >
               <MinusIcon />
             </button>
-            <button onClick={resetScale}>
+            <button
+              onClick={resetScale}
+              data-tooltip-id="pdf-viewer-toolbar-zoom-reset"
+              data-tooltip-content="Reset Zoom"
+            >
               <ResetIcon />
             </button>
-            <button onClick={increaseScale}>
+            <button
+              onClick={increaseScale}
+              data-tooltip-id="pdf-viewer-toolbar-zoom-in"
+              data-tooltip-content="Zoom In"
+            >
               <PlusIcon />
             </button>
           </div>
           <div className="flex items-center justify-between w-24">
-            <button onClick={movePageLeft}>
+            <button
+              onClick={movePageLeft}
+              data-tooltip-id="pdf-viewer-toolbar-prev-page"
+              data-tooltip-content="Previois Page"
+            >
               <ArrowLeftIcon />
             </button>
             <p>
               {currentPage + 1} / {numPages}
             </p>
-            <button onClick={movePageRight}>
+            <button
+              onClick={movePageRight}
+              data-tooltip-id="pdf-viewer-toolbar-next-page"
+              data-tooltip-content="Next Page"
+            >
               <ArrowRightIcon />
             </button>
           </div>
@@ -151,12 +173,17 @@ export default function PdfViewer({
                   pageRefs.current[index] = el;
                 }
               }}
-              customTextRenderer={index + 1 === page ? textRenderer : undefined}
+              customTextRenderer={index + 1 === parseInt(page) ? textRenderer : undefined}
               scale={scale}
             />
           ))}
         </Document>
       </div>
+      <Tooltip id={`pdf-viewer-toolbar-zoom-in`} />
+      <Tooltip id={`pdf-viewer-toolbar-zoom-reset`} />
+      <Tooltip id={`pdf-viewer-toolbar-zoom-out`} />
+      <Tooltip id={`pdf-viewer-toolbar-prev-page`} />
+      <Tooltip id={`pdf-viewer-toolbar-next-page`} />
     </div>
   );
 }
