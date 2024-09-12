@@ -4,30 +4,27 @@ import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { Document, Page } from "react-pdf";
+import { stringSimilarity } from "string-similarity-js";
 import MinusIcon from "@/components/ui/icons/MinusIcon";
 import ResetIcon from "@/components/ui/icons/ResetIcon";
 import PlusIcon from "@/components/ui/icons/PlusIcon";
 import ArrowLeftIcon from "@/components/ui/icons/ArrowLeftIcon";
 import ArrowRightIcon from "@/components/ui/icons/ArrowRightIcon";
+import Spinner from "@/components/ui/spinner";
+import type { DocumentType } from "@/types/document";
+
 function highlightPattern(text: string, pattern: string) {
-  console.debug('--pattern->', pattern)
-  if (text && pattern.includes(text)) {
+  if (
+    text &&
+    (pattern.includes(text) || stringSimilarity(text, pattern) > 0.5)
+  ) {
     return `<mark>${text}</mark>`;
   }
   return text;
 }
 
-export default function PdfViewer({
-  fileName,
-  originUrl,
-  page,
-  highlight,
-}: {
-  fileName: string;
-  originUrl: string;
-  page?: number;
-  highlight?: string;
-}) {
+export default function PdfViewer({ document }: { document: DocumentType }) {
+  const { display_name, originUrl, page, highlight } = document;
   const pageRefs = useRef<HTMLCanvasElement[]>([]);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const documentHeaderRef = useRef<HTMLDivElement>(null);
@@ -107,7 +104,7 @@ export default function PdfViewer({
         className="flex w-full flex-row justify-between"
       >
         <div className="flex">
-          <p className="text-sm">{fileName}</p>
+          <p className="text-sm">{display_name}</p>
         </div>
         <div className="flex">
           <div className="flex items-center justify-between w-20 mr-4">
@@ -163,6 +160,11 @@ export default function PdfViewer({
           file={originUrl}
           onLoadSuccess={onDocumentLoadSuccess}
           onScroll={onScroll}
+          loading={() => (
+            <div className="flex justify-center items-center h-full w-full">
+              <Spinner />
+            </div>
+          )}
         >
           {Array.from({ length: numPages }).map((_, index) => (
             <Page
@@ -173,7 +175,9 @@ export default function PdfViewer({
                   pageRefs.current[index] = el;
                 }
               }}
-              customTextRenderer={index + 1 === parseInt(page) ? textRenderer : undefined}
+              customTextRenderer={
+                index + 1 === parseInt(page) ? textRenderer : undefined
+              }
               scale={scale}
             />
           ))}

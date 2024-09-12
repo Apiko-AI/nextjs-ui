@@ -8,6 +8,7 @@ import CloseIcon from "@/components/ui/icons/CloseIcon";
 import DownloadIcon from "@/components/ui/icons/DownloadIcon";
 import { DocumentsContext } from "@/context/documents-context/document-context";
 import Link from "next/link";
+import { getDocumentOriginUrl } from "@/utils/documents";
 
 type Tab = {
   text: string;
@@ -23,6 +24,7 @@ function Tabs({ tabs }: { tabs: Tab[] }) {
         return (
           <button
             key={tab.id}
+            onClick={tab.onClick}
             className="flex w-48 p-2 items-center justify-between transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50  bg-background shadow-sm hover:bg-accent hover:text-accent-foreground  whitespace-pre-wrap"
           >
             {tab.text}
@@ -44,6 +46,7 @@ function Tabs({ tabs }: { tabs: Tab[] }) {
 export default function PdfViewLayout() {
   const { selected, items, removeItem, setSelectedDocument } =
     useContext(DocumentsContext);
+  console.debug("--->", items);
   return selected ? (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="flex flex-coll w-full min-h-10 border-b border-r">
@@ -60,7 +63,7 @@ export default function PdfViewLayout() {
             data-tooltip-id={`PdfViewLayout-download`}
             data-tooltip-content="Download"
             target="_blank"
-            href={`${location.origin}/api/documents/preview/${selected.file_name}`}
+            href={getDocumentOriginUrl(selected.file_name)}
           >
             <DownloadIcon />
           </Link>
@@ -69,10 +72,10 @@ export default function PdfViewLayout() {
       </div>
       <div className="flex w-full px-2 mt-2">
         <PdfViewer
-          fileName={selected.file_name}
-          originUrl={`${location.origin}/api/documents/preview/${selected.file_name}`}
-          page={selected.page}
-          highlight={selected.highlight}
+          document={{
+            ...selected,
+            originUrl: getDocumentOriginUrl(selected.file_name),
+          }}
         />
       </div>
     </div>

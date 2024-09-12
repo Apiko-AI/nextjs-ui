@@ -8,24 +8,18 @@ interface IDocumentsContextValue {
   selected: DocumentType | null;
   setSelectedDocument: (document: DocumentType) => void;
   pushItem: (document: DocumentType) => void;
+  pushItems: (documents: Array<DocumentType>) => void;
   removeItem: (document: DocumentType) => void;
 }
 interface IDocumentsProviderProps extends PropsWithChildren {}
 
-// todo: remove mocDocument
-const mocDocument = {
-  file_name: "d5dcd54c-b1ce-4bea-b715-5a03f0c05d64_Generative AI.pdf",
-  highlight:
-    " 1.1.1.1. Narrow AI (Weak AI) is a type of artificial intelligence (AI) that is designed and trained for a specific task or range of tasks.",
-  originUrl:
-    "http://localhost:8000/documents/download/d5dcd54c-b1ce-4bea-b715-5a03f0c05d64_Generative AI.pdf",
-  page: 4,
-};
+
 const defaultContextValue = {
   items: [],
   selected: null,
   setSelectedDocument: () => {},
   pushItem: () => {},
+  pushItems: () => {},
   removeItem: () => {},
 };
 const MAX_COUNT = 3;
@@ -59,6 +53,10 @@ const DocumentsProvider: FC<IDocumentsProviderProps> = ({ children }) => {
     });
   }, []);
 
+  const pushItems = useCallback((documents: Array<DocumentType>) => {
+    setItems([...documents.splice(0, MAX_COUNT)]);
+  }, []);
+
   const removeItem = useCallback(
     (document: DocumentType) => {
       const index = items.map((d) => d.file_name).indexOf(document.file_name);
@@ -76,7 +74,14 @@ const DocumentsProvider: FC<IDocumentsProviderProps> = ({ children }) => {
 
   return (
     <DocumentsContext.Provider
-      value={{ items, selected, setSelectedDocument, pushItem, removeItem }}
+      value={{
+        items,
+        selected,
+        setSelectedDocument,
+        pushItem,
+        removeItem,
+        pushItems,
+      }}
     >
       {children}
     </DocumentsContext.Provider>

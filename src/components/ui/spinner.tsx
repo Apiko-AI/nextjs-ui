@@ -1,6 +1,6 @@
 import * as React from "react";
 
-const Spinner = ({ className }: { className: string }) => {
+const Spinner = ({ className }: { className?: string }) => {
   return (
     <div role="status" className={className}>
       <svg
@@ -24,4 +24,4 @@ const Spinner = ({ className }: { className: string }) => {
   );
 };
 
-export { Spinner };
+export default Spinner;

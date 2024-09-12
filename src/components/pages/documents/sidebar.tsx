@@ -3,9 +3,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useContext } from "react";
 import UserSettings from "@/components/user-settings";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
+import { DocumentsContext } from "@/context/documents-context/document-context";
+import type { DocumentType } from "@/types/document";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -16,6 +18,7 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
   const router = useRouter();
   const fileInputRef = useRef<{ files: File[] }>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const { setSelectedDocument, pushItems } = useContext(DocumentsContext);
 
   const onProgress = useCallback(
     (e) => {
@@ -35,13 +38,16 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
         body: formData,
       })
         .then((response) => response.json())
-        .then((data) => {
+        .then((uploadedFiles: Array<DocumentType>) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
           fileInputRef.current.value = null;
-          const fileNames = data.join(",");
+          const fileNames = uploadedFiles.map((d) => d.display_name).join(",");
           toast.success(`Files: ${fileNames} uploaded successfully`);
           setIsUploading(false);
+
+          pushItems(uploadedFiles.map((d) => ({ ...d, page: 1 })));
+          setSelectedDocument(uploadedFiles[0]);
         })
         .catch((error) => {
           toast.error("Something went wrong.");
