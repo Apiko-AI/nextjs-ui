@@ -46,7 +46,6 @@ function Tabs({ tabs }: { tabs: Tab[] }) {
 export default function PdfViewLayout() {
   const { selected, items, removeItem, setSelectedDocument } =
     useContext(DocumentsContext);
-  console.debug("--->", items);
   return selected ? (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="flex flex-coll w-full min-h-10 border-b border-r">

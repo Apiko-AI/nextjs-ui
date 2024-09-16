@@ -1,13 +1,16 @@
 "use client";
+import React, { useCallback, useContext } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState, useRef, useCallback, useContext } from "react";
 import UserSettings from "@/components/user-settings";
-import Spinner from "@/components/ui/spinner";
 import { DocumentsContext } from "@/context/documents-context/document-context";
 import type { DocumentType } from "@/types/document";
+import { Upload } from "@/components/ui/upload/Upload";
+import { UploadList } from "@/components/ui/upload/UploadList";
+import { UploadProvider } from "@/components/ui/upload/context";
+import { ProgressButton } from "@/components/ui/upload/ProgressButton";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -16,47 +19,24 @@ interface SidebarProps {
 
 export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
   const router = useRouter();
-  const fileInputRef = useRef<{ files: File[] }>(null);
-  const [isUploading, setIsUploading] = useState(false);
+
   const { setSelectedDocument, pushItems } = useContext(DocumentsContext);
 
-  const onProgress = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (!fileInputRef.current) return;
-      const { files } = fileInputRef.current;
-      if (!files.length) return;
+  const onSuccess = useCallback(
+    (uploadedFiles: Array<DocumentType>) => {
+      const fileNames = uploadedFiles.map((d) => d.display_name).join(",");
+      toast.success(`Files: ${fileNames} uploaded successfully`);
 
-      const formData = new FormData();
-      Array.from({ length: files.length }).forEach((_, index: number) => {
-        const file = files[index];
-        formData.append("files", file, file.name);
-      });
-      setIsUploading(true);
-      fetch("/api/documents/upload", {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((uploadedFiles: Array<DocumentType>) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          fileInputRef.current.value = null;
-          const fileNames = uploadedFiles.map((d) => d.display_name).join(",");
-          toast.success(`Files: ${fileNames} uploaded successfully`);
-          setIsUploading(false);
-
-          pushItems(uploadedFiles.map((d) => ({ ...d, page: 1 })));
-          setSelectedDocument(uploadedFiles[0]);
-        })
-        .catch((error) => {
-          toast.error("Something went wrong.");
-          setIsUploading(false);
-          console.error(error);
-        });
+      pushItems(uploadedFiles.map((d) => ({ ...d, page: 1 })));
+      setSelectedDocument(uploadedFiles[0]);
     },
-    [setIsUploading],
+    [setSelectedDocument, pushItems],
   );
+
+  const onError = useCallback((error: Error) => {
+    toast.error("Something went wrong.");
+    console.error(error);
+  }, []);
 
   return (
     <div
@@ -89,29 +69,18 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
           <p className="pl-4 text-xs text-muted-foreground">
             Upload your documents here and click on Process button.
           </p>
+          <UploadProvider>
+            <Upload />
+            <div className="mt-4">
+              <UploadList />
+            </div>
 
-          <label
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            htmlFor="file_input"
-          >
-            Upload file
-          </label>
-          <input
-            ref={fileInputRef}
-            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            type="file"
-            multiple
-          />
-          <p
-            className="mt-1 text-sm text-gray-500 dark:text-gray-300"
-            id="file_input_help"
-          >
-            Limit 200MB per file • PDF, DOCX
-          </p>
-          <Button disabled={isUploading} onClick={onProgress}>
-            Progress
-            {isUploading && <Spinner className="ml-2" />}
-          </Button>
+            <ProgressButton
+              api="/api/documents/upload"
+              onError={onError}
+              onSuccess={onSuccess}
+            />
+          </UploadProvider>
         </div>
       </div>
 
