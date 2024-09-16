@@ -44,27 +44,29 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
       className="relative justify-between group lg:bg-accent/20 lg:dark:bg-card/35 flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2 "
     >
       <div className=" flex flex-col justify-between p-2 max-h-fit overflow-y-auto">
-        <Button
+        <button
           onClick={() => {
             router.push("/documents");
           }}
           variant="ghost"
-          className="flex justify-start w-full h-14 text-sm xl:text-lg font-normal items-center"
+          className="flex w-full items-center px-2"
         >
-          <div className="flex w-full">
-            {!isMobile && (
-              <Image
-                src="/apiko.svg"
-                alt="AI"
-                width={28}
-                height={28}
-                className="dark:invert hidden 2xl:block"
-              />
-            )}
-            Apiko AI
-          </div>
-        </Button>
-        <div className="flex flex-col pt-10 gap-2">
+          <Image
+            src="/logo-apiko.png"
+            alt="AI"
+            width={128}
+            height={64}
+            className="dark:invert hidden md:block"
+          />
+          <Image
+            src="/logo-ai.png"
+            alt="AI"
+            width={48}
+            height={48}
+            className="hidden md:block"
+          />
+        </button>
+        <div className="hidden md:flex flex-col pt-10 gap-2 ">
           <p className="pl-4 text-lg text-muted-foreground">Knowledge base</p>
           <p className="pl-4 text-xs text-muted-foreground">
             Upload your documents here and click on Process button.
@@ -84,7 +86,7 @@ export function Sidebar({ isCollapsed, isMobile }: SidebarProps) {
         </div>
       </div>
 
-      <div className="justify-end px-2 py-2 w-full border-t">
+      <div className="hidden md:flex justify-end px-2 py-2 w-full border-t">
         <UserSettings />
       </div>
     </div>
