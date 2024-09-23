@@ -1,6 +1,11 @@
 "use client";
+import { ChatRequestOptions } from "ai";
+import { useChat } from "ai/react";
+import React, { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
-import { ChatLayout } from "@/components/chat/chat-layout";
+import { ChatLayout } from "@/components/pages/chat-layout";
 import {
   Dialog,
   DialogDescription,
@@ -10,12 +15,6 @@ import {
 } from "@/components/ui/dialog";
 
 import UsernameForm from "@/components/username-form";
-
-import { ChatRequestOptions } from "ai";
-import { useChat } from "ai/react";
-import React, { useEffect, useRef } from "react";
-import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
   const {
@@ -118,7 +117,7 @@ export default function Home() {
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">
-            <DialogTitle>Welcome to Ollama!</DialogTitle>
+            <DialogTitle>Welcome to Apiko AI!</DialogTitle>
             <DialogDescription>
               Enter your name to get started. This is just to personalize your
               experience.

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Message } from "ai/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SidebarSkeleton from "./sidebar-skeleton";
 import UserSettings from "./user-settings";
 import {
@@ -123,10 +123,18 @@ export function Sidebar({
                 className="dark:invert hidden 2xl:block"
               />
             )}
-            New chat
+            Apiko AI
           </div>
-          <SquarePen size={18} className="shrink-0 w-4 h-4" />
         </Button>
+
+        <div className="flex flex-row justify-center">
+          <Link
+            href="/documents"
+            className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          >
+            Documents AI
+          </Link>
+        </div>
 
         <div className="flex flex-col pt-10 gap-2">
           <p className="pl-4 text-xs text-muted-foreground">Your chats</p>

@@ -1,26 +1,23 @@
-import { Message } from "ai/react";
 import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Avatar, AvatarImage } from "../ui/avatar";
-import { ChatProps } from "./chat";
 import Image from "next/image";
-import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
-import { Button } from "../ui/button";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ChatMessage from "@/components/chat/chat-message";
+
+import type { Message } from "@/types/message";
 
 export default function ChatList({
   messages,
-  handleInputChange,
   isLoading,
   loadingSubmit,
-  formRef,
-  isMobile,
   messageDataRender,
-}: ChatProps) {
+}: {
+  messages: Message[];
+  isLoading: boolean;
+  loadingSubmit: boolean;
+  messageDataRender?: (message: Message) => React.JSX.Element | null;
+}) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [name, setName] = React.useState<string>("");
-  const [initialQuestions, setInitialQuestions] = React.useState<Message[]>([]);
-
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   };
@@ -36,46 +33,10 @@ export default function ChatList({
     }
   }, []);
 
-  useEffect(() => {
-    // Fetch 4 initial questions
-    if (messages.length === 0) {
-      const questionCount = isMobile ? 2 : 4;
-
-      setInitialQuestions(
-        INITIAL_QUESTIONS.sort(() => Math.random() - 0.5)
-          .slice(0, questionCount)
-          .map((message) => {
-            return {
-              id: "1",
-              role: "user",
-              content: message.content,
-            };
-          }),
-      );
-    }
-  }, [isMobile]);
-
-  const onClickQuestion = (value: string, e: React.MouseEvent) => {
-    e.preventDefault();
-
-    handleInputChange({
-      target: { value },
-    } as React.ChangeEvent<HTMLTextAreaElement>);
-
-    setTimeout(() => {
-      formRef.current?.dispatchEvent(
-        new Event("submit", {
-          cancelable: true,
-          bubbles: true,
-        }),
-      );
-    }, 1);
-  };
-
   if (messages.length === 0) {
     return (
       <div className="w-full h-full flex justify-center items-center">
-        <div className="relative flex flex-col gap-4 items-center justify-center w-full h-full">
+        <div className="relative flex flex-col gap-4 items-center justify-center w-full">
           <div></div>
           <div className="flex flex-col gap-4 items-center">
             <Image
@@ -88,38 +49,6 @@ export default function ChatList({
             <p className="text-center text-lg text-muted-foreground">
               How can I help you today?
             </p>
-          </div>
-
-          <div className="absolute bottom-0 w-full px-4 sm:max-w-3xl grid gap-2 sm:grid-cols-2 sm:gap-4 text-sm">
-            {/* Only display 4 random questions */}
-            {initialQuestions.length > 0 &&
-              initialQuestions.map((message) => {
-                const delay = Math.random() * 0.25;
-
-                return (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 1, y: 10, x: 0 }}
-                    animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                    exit={{ opacity: 0, scale: 1, y: 10, x: 0 }}
-                    transition={{
-                      opacity: { duration: 0.1, delay },
-                      scale: { duration: 0.1, delay },
-                      y: { type: "spring", stiffness: 100, damping: 10, delay },
-                    }}
-                    key={message.content}
-                  >
-                    <Button
-                      key={message.content}
-                      type="button"
-                      variant="outline"
-                      className="sm:text-start px-4 py-8 flex w-full justify-center sm:justify-start items-center text-sm whitespace-pre-wrap"
-                      onClick={(e) => onClickQuestion(message.content, e)}
-                    >
-                      {message.content}
-                    </Button>
-                  </motion.div>
-                );
-              })}
           </div>
         </div>
       </div>

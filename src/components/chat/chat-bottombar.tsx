@@ -2,27 +2,21 @@
 
 import React, { useEffect } from "react";
 import { ChatProps } from "./chat";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
 import TextareaAutosize from "react-textarea-autosize";
-import { motion, AnimatePresence } from "framer-motion";
-import { ImageIcon, PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
+import { AnimatePresence } from "framer-motion";
+import { ImageIcon, StopIcon } from "@radix-ui/react-icons";
 import { Mic, SendHorizonal } from "lucide-react";
 import useSpeechToText from "@/app/hooks/useSpeechRecognition";
 
 export default function ChatBottombar({
-  messages,
   input,
   handleInputChange,
   handleSubmit,
   isLoading,
-  error,
   stop,
-  formRef,
   setInput,
 }: ChatProps) {
-  const [message, setMessage] = React.useState(input);
   const [isMobile, setIsMobile] = React.useState(false);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 

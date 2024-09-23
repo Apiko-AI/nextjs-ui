@@ -26,7 +26,7 @@ This project aims to be the easiest way for you to get started with LLMs. No ted
 - **Copy codeblocks easily:** Easily copy the highlighted code with one click.
 - **Download/Pull & Delete models:** Easily download and delete models directly from the interface.
 - **Switch between models:** Switch between models fast with a click.
-- **Chat history:** Chats are saved and easily accessed.
+- **DocumentsPageLayout history:** Chats are saved and easily accessed.
 - **Light & Dark mode:** Switch between light & dark mode.
 
 # Preview
@@ -121,7 +121,7 @@ This is a to-do list consisting of upcoming features.
 
 [shadcn-ui](https://ui.shadcn.com/) - UI component built using Radix UI and Tailwind CSS
 
-[shadcn-chat](https://github.com/jakobhoeg/shadcn-chat) - Chat components for NextJS/React projects
+[shadcn-chat](https://github.com/jakobhoeg/shadcn-chat) - DocumentsPageLayout components for NextJS/React projects
 
 [Framer Motion](https://www.framer.com/motion/) - Motion/animation library for React
 
