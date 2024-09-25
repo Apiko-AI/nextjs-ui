@@ -28,7 +28,6 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
 
   const onSuccess = useCallback(
     (uploadedFiles: Array<DocumentListItemType>) => {
-      console.debug("---->", uploadedFiles);
       const fileNames = uploadedFiles.map((d) => d.display_name).join(",");
       pushItems(uploadedFiles.map((d) => ({ ...d, page: 1 })));
       uploadedFiles.forEach((item) => pushDocumentListItem(item));
