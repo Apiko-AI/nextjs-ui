@@ -3,13 +3,19 @@
 import React, { useCallback, useContext } from "react";
 import { useDropzone } from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
-import { UploadContext } from "@/components/ui/upload/context";
+import { UploadContext, UploadFile } from "@/components/ui/upload/context";
 import UploadIcon from "@/components/ui/icons/UploadIcon";
 
-function Upload() {
+function Upload({
+  onDrop,
+  disabled = false,
+}: {
+  onDrop: (items: Array<UploadFile>) => void;
+  disabled?: boolean;
+}) {
   const { setItems } = useContext(UploadContext);
 
-  const onDrop = useCallback(
+  const onDropSpy = useCallback(
     (acceptedFiles: File[]) => {
       const newItems = acceptedFiles.map((file) => ({
         id: uuidv4(),
@@ -19,10 +25,16 @@ function Upload() {
         file: file,
       }));
       setItems(newItems);
+      if (onDrop) {
+        onDrop(newItems);
+      }
     },
     [setItems],
   );
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: onDropSpy,
+    disabled,
+  });
 
   return (
     <div

@@ -1,160 +1,90 @@
 "use client";
-
-import React, { useContext, useEffect, useRef } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import { pdfjs } from "react-pdf";
 import { v4 as uuidv4 } from "uuid";
-import { cn } from "@/lib/utils";
-import { Sidebar } from "@/components/pages/documents/sidebar";
-import PdfViewLayout from "@/components/pages/documents/pdf-view-layout";
-import { useChat } from "@/app/hooks/useChat";
-import { DocumentsContext } from "@/context/documents-context/document-context";
-import ChatList from "@/components/pages/documents/chat/chat-list";
-import ChatBottombar from "@/components/chat/chat-bottombar";
-import { ChatMessageDocumentData } from "@/components/pages/documents/chat/chat-message-document-data";
+import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { ChatLayout } from "@/components/pages/documents/chat/chat-layout";
+import { DocumentsProvider } from "@/context/documents-context/document-context";
+import { DocumentListProvider } from "@/context/documents-context/document-list-context";
+import {
+  Dialog,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+} from "@/components/ui/dialog";
 
-import type { ChatRequestOptions } from "ai";
+import UsernameForm from "@/components/username-form";
 
-interface DocumentsChatLayoutProps {
-  defaultLayout: number[];
-  isMobile: boolean;
-}
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-tooltip/dist/react-tooltip.css";
 
-export function DocumentsPageLayout({
-  defaultLayout,
-  isMobile,
-}: DocumentsChatLayoutProps) {
-  const { selected } = useContext(DocumentsContext);
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
-  const [chatId, setChatId] = React.useState<string>("");
-  const formRef = useRef<HTMLFormElement>(null);
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    error,
-    stop,
-    setMessages,
-    setInput,
-  } = useChat({
-    api: "api/documents/chat",
-  });
+export function DocumentsPageLayout() {
+  const [open, setOpen] = React.useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [, setCookie] = useCookies(["user_id"]);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (!localStorage.getItem("user_name")) {
+      setOpen(true);
+    }
+    if (!localStorage.getItem("user_id")) {
+      const userId = uuidv4();
+      localStorage.setItem("user_id", userId);
+      setCookie("user_id", userId);
+    }
+  }, []);
 
-    setMessages([...messages]);
+  const onOpenChange = (isOpen: boolean) => {
+    const username = localStorage.getItem("user_name");
+    if (username) return setOpen(isOpen);
 
-    // Prepare the options object with additional body data, to pass the model.
-    const requestOptions: ChatRequestOptions = {
-      options: {
-        body: {
-          chatId,
-        },
-      },
-    };
-
-    // Call the handleSubmit function with the options
-    handleSubmit(e, requestOptions);
+    localStorage.setItem("user_name", "Anonymous");
+    window.dispatchEvent(new Event("storage"));
+    setOpen(isOpen);
   };
 
   useEffect(() => {
-    if (messages.length < 1) {
-      setChatId(uuidv4());
-    }
-  }, [messages]);
+    const checkScreenWidth = () => {
+      setIsMobile(window.innerWidth <= 1023);
+    };
+
+    // Initial check
+    checkScreenWidth();
+
+    // Event listener for screen width changes
+    window.addEventListener("resize", checkScreenWidth);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", checkScreenWidth);
+    };
+  }, []);
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      onLayout={(sizes: number[]) => {
-        document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-          sizes,
-        )}`;
-      }}
-      className="h-screen items-stretch"
-    >
-      <ResizablePanel
-        defaultSize={defaultLayout[0]}
-        collapsedSize={10}
-        collapsible={true}
-        minSize={isMobile ? 0 : 12}
-        maxSize={isMobile ? 0 : 16}
-        onCollapse={() => {
-          setIsCollapsed(true);
-          document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            true,
-          )}`;
-        }}
-        onExpand={() => {
-          setIsCollapsed(false);
-          document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            false,
-          )}`;
-        }}
-      >
-        <Sidebar
-          isCollapsed={isCollapsed || isMobile}
-          messages={messages}
-          isMobile={isMobile}
-          chatId={chatId}
-          setMessages={setMessages}
-        />
-      </ResizablePanel>
-      <ResizableHandle className={cn("hidden md:flex")} withHandle />
-      <ResizablePanel
-        defaultSize={defaultLayout[1]}
-        collapsible={false}
-        minSize={isMobile ? 0 : 50}
-        maxSize={isMobile ? 0 : 100}
-        className={cn(
-          "h-full flex justify-center",
-          selected
-            ? "w-full transition-all duration-300 ease-in-out"
-            : "hidden",
-        )}
-      >
-        <PdfViewLayout />
-      </ResizablePanel>
-      {selected && <ResizableHandle withHandle={Boolean(selected)} />}
-      <ResizablePanel
-        className="h-full w-full flex flex-col"
-        defaultSize={defaultLayout[2]}
-        collapsible={false}
-        minSize={20}
-      >
-        <div className="flex flex-coll w-full min-h-10 border-b items-center">
-          <p className="text-md ml-2">Chat</p>
-        </div>
-        <div className="flex w-full h-full px-2 mt-2 justify-center">
-          <div className="flex flex-col justify-between w-full max-w-3xl h-full">
-            <ChatList
-              messages={messages}
-              isLoading={isLoading}
-              loadingSubmit={isLoading}
-              messageDataRender={ChatMessageDocumentData}
-            />
+    <DocumentListProvider>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DocumentsProvider>
+          <ChatLayout isMobile={isMobile} defaultLayout={[30, 0, 60]} />
+        </DocumentsProvider>
 
-            <ChatBottombar
-              messages={messages}
-              input={input}
-              handleInputChange={handleInputChange}
-              handleSubmit={onSubmit}
-              isLoading={isLoading}
-              error={error}
-              stop={stop}
-              formRef={formRef}
-              setInput={setInput}
-            />
-          </div>
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        <DialogContent className="flex flex-col space-y-4">
+          <DialogHeader className="space-y-2">
+            <DialogTitle>Welcome to Apiko AI!</DialogTitle>
+            <DialogDescription>
+              Enter your name to get started. This is just to personalize your
+              experience.
+            </DialogDescription>
+            <UsernameForm setOpen={setOpen} />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </DocumentListProvider>
   );
 }

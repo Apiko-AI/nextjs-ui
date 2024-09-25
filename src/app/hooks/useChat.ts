@@ -35,6 +35,7 @@ export const useChat = ({ api }: { api: string }) => {
 
       fetch(api, {
         method: "POST",
+        credentials: "same-origin",
         body: JSON.stringify({
           messages: newMessages,
           ...(requestOptions.options?.body || {}),
