@@ -1,11 +1,13 @@
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
+
 export async function POST(req: Request) {
   const { messages, chatId } = await req.json();
 
   return fetch(`${process.env.AI_API_URL}/documents/chat`, {
     method: "POST",
+    credentials: "same-origin",
     body: JSON.stringify({
       messages,
       chat_id: chatId,

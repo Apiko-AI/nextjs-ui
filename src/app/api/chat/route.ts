@@ -8,12 +8,14 @@ export async function POST(req: Request) {
 
   const response = await fetch(`${process.env.AI_API_URL}/db/chat`, {
     method: "POST",
+    credentials: "same-origin",
     body: JSON.stringify({
       messages,
       chain_type: chainType || "with-message-history",
       chat_id: chatId,
     }),
     headers: {
+      ...req.headers,
       Accept: "application/json",
       "Content-Type": "application/json",
     },

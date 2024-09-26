@@ -1,2 +1,2 @@
 export const getDocumentOriginUrl = (fileName: string) =>
-  `${location.origin}/api/documents/preview/${fileName}`;
+  `${location.origin}/api/documents/${fileName}`;

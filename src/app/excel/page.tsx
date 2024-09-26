@@ -19,16 +19,16 @@ export default function Excel() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("ollama_user")) {
+    if (!localStorage.getItem("user_name")) {
       setOpen(true);
     }
   }, []);
 
   const onOpenChange = (isOpen: boolean) => {
-    const username = localStorage.getItem("ollama_user");
+    const username = localStorage.getItem("user_name");
     if (username) return setOpen(isOpen);
 
-    localStorage.setItem("ollama_user", "Anonymous");
+    localStorage.setItem("user_name", "Anonymous");
     window.dispatchEvent(new Event("storage"));
     setOpen(isOpen);
   };
